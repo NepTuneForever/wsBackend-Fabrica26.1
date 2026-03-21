@@ -1,6 +1,6 @@
 import requests
 from django.views import View
-from django.views.generic import ListView
+from django.views.generic import ListView, UpdateView
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from .models import Cripto, Favorito
@@ -29,11 +29,7 @@ class CryptoListView(View):
         return render(request, "criptolist.html", {"criptos": criptos, "erro": None})
 
     def post(self, request):
-        Favorito.objects.create(
-            nome    = request.POST.get('cripto_name'),
-            simbolo = request.POST.get('cripto_symbol'),
-            preco   = request.POST.get('cripto_price'),
-        )
+        Favorito.objects.create( nome = request.POST.get('cripto_name'), simbolo = request.POST.get('cripto_symbol'), preco  = request.POST.get('cripto_price'))
         return redirect('cripto-list')
 
 class VerFavoritos(ListView):
@@ -45,6 +41,27 @@ class VerFavoritos(ListView):
         favorito_id = request.POST.get('favorito_id')
         Favorito.objects.filter(id=favorito_id).delete()
         return redirect('ver-favoritos')
+    
+class AnalisarPrecos(ListView):
+    model = Favorito
+    template_name = 'analisarprecos.html'
+    context_object_name = 'favoritos'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['mais_caro']   = Favorito.objects.order_by('-preco').first()
+        context['mais_barato'] = Favorito.objects.order_by('preco').first()
+        context['total']       = sum(f.preco for f in context['favoritos'])
+
+        return context
+    
+class AtualizarPrecos(UpdateView):
+    model = Favorito
+    fields = ['preco']
+    template_name = 'atualizarprecos.html'
+    success_url = reverse_lazy('analisar-precos')
+
 
 # Source - https://stackoverflow.com/a/41085356
 # Posted by Ibrahim Kasim, modified by community. See post 'Timeline' for change history
