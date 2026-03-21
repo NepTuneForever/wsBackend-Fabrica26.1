@@ -8,29 +8,22 @@ from .models import Cripto, Favorito
 class CryptoListView(View):
     def get(self, request):
         try:
-            response = requests.get(
-                "https://api.coingecko.com/api/v3/coins/markets",
-                params={
-                    "vs_currency": "usd",
-                    "per_page": 20,
-                    "page": 1,
-                },
-                timeout=10
-            )
+            response = requests.get("https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&per_page=20", timeout=10)
             if response.status_code == 429:
-                criptos = []
-                erro = "Muitas requisições. Aguarde alguns segundos e recarregue."
+                return render(request, "criptolist.html", {"criptos": [], "erro": "Muitas requisições, aguarde um instante."})
             elif response.status_code != 200:
-                criptos = []
-                erro = f"Erro na API: {response.status_code}"
-            else:
-                criptos = response.json()
-                erro = None
-        except Exception as e:
-            criptos = []
-            erro = str(e)
+                return render(request, "criptolist.html", {"criptos": [], "erro": f"Erro na API encontrado: {response.status_code}"})
 
-        return render(request, "criptolist.html", {"criptos": criptos, "erro": erro})
+            favoritos = list(Favorito.objects.values_list('simbolo', flat=True)) # Tava vindo como tupla dentro de listas, converti pra apenas lista (usando flat=True)
+            criptos = []
+            for c in response.json():
+                if c['symbol'] not in favoritos:
+                    criptos.append(c)
+
+        except Exception as e:
+            return render(request, "criptolist.html", {"criptos": [], "erro": str(e)})
+
+        return render(request, "criptolist.html", {"criptos": criptos, "erro": None})
 
     def post(self, request):
         Favorito.objects.create(
@@ -44,5 +37,18 @@ class VerFavoritos(ListView):
     model = Favorito
     template_name = 'favoritos.html'
     context_object_name = 'cripto_favoritos'
-    success_url = reverse_lazy('ver-favoritos')
 
+    def post(self, request):
+        favorito_id = request.POST.get('favorito_id')
+        Favorito.objects.filter(id=favorito_id).delete()
+        return redirect('ver-favoritos')
+
+# Source - https://stackoverflow.com/a/41085356
+# Posted by Ibrahim Kasim, modified by community. See post 'Timeline' for change history
+# Retrieved 2026-03-21, License - CC BY-SA 4.0
+
+# >>> list(Article.objects.values_list('id', flat=True)) # flat=True will remove the tuples and return the list   
+# [1, 2, 3, 4, 5, 6]
+
+# >>> list(Article.objects.values('id'))
+# [{'id':1}, {'id':2}, {'id':3}, {'id':4}, {'id':5}, {'id':6}]

@@ -119,14 +119,15 @@
     {% for fav in cripto_favoritos %}
     <div class="card">
         <div class="top">
-            <div>
+            <div> 
                 <span class="name">{{ fav.nome }}</span>
                 <span class="symbol">({{ fav.simbolo|upper }})</span>
             </div>
             <div class="right">
                 <span class="price">${{ fav.preco }}</span>
-                <form method="POST">
-                    {% csrf_token %}
+               <form method="POST">
+                {% csrf_token %}
+                    <input type="hidden" name="favorito_id" value="{{ fav.id }}">
                     <button type="submit" class="btn-remove" title="Remover">−</button>
                 </form>
             </div>
