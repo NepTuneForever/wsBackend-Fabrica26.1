@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>CryptoTrack — Análise</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg: #05080f;
+            --surface: #0b1120;
+            --border: rgba(160, 100, 255, 0.12);
+            --accent: #a064ff;
+            --accent2: #00d4ff;
+            --green: #00ff88;
+            --gold: #ffd166;
+            --red: #ff4466;
+            --muted: #3a4a5c;
+            --text: #c8dff0;
+            --heading: #ffffff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Space Mono', monospace;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(160,100,255,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(160,100,255,0.025) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: -200px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 700px;
+            height: 500px;
+            background: radial-gradient(ellipse, rgba(160,100,255,0.08) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        header {
+            position: relative;
+            z-index: 10;
+            padding: 28px 40px 20px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 36px;
+            letter-spacing: 4px;
+            color: var(--heading);
+        }
+
+        nav { display: flex; gap: 10px; }
+
+        nav a {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            border-radius: 2px;
+            transition: all 0.2s;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+            border-color: rgba(160,100,255,0.4);
+            background: rgba(160,100,255,0.05);
+        }
+
+        .hero {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 50px 20px 40px;
+        }
+
+        .hero-label {
+            font-size: 11px;
+            letter-spacing: 4px;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .hero h1 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(48px, 8vw, 96px);
+            letter-spacing: 8px;
+            color: var(--heading);
+            line-height: 1;
+        }
+
+        .hero h1 span { color: var(--accent); }
+
+        .stats-grid {
+            position: relative;
+            z-index: 10;
+            max-width: 900px;
+            margin: 0 auto 30px;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 20px 24px;
+            animation: fadeUp 0.5s ease both;
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 0.1s; border-color: rgba(0,255,136,0.15); }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; border-color: rgba(255,68,102,0.15); }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; border-color: rgba(160,100,255,0.2); }
+
+        .stat-label {
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 28px;
+            letter-spacing: 2px;
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+
+        .stat-card:nth-child(1) .stat-value { color: var(--green); }
+        .stat-card:nth-child(2) .stat-value { color: var(--red); }
+        .stat-card:nth-child(3) .stat-value { color: var(--accent); }
+
+        .stat-sub { font-size: 11px; color: var(--muted); }
+
+        .main-grid {
+            position: relative;
+            z-index: 10;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px 60px;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+        }
+
+        .chart-box, .table-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 24px;
+            animation: fadeUp 0.5s ease both;
+        }
+
+        .chart-box { animation-delay: 0.35s; }
+        .table-box { animation-delay: 0.45s; }
+
+        .box-title {
+            font-size: 10px;
+            letter-spacing: 3px;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        .chart-wrap { height: 260px; }
+
+        .table-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(160,100,255,0.06);
+            transition: padding 0.15s;
+        }
+
+        .table-row:last-child { border-bottom: none; }
+        .table-row:hover { padding-left: 6px; }
+
+        .row-name { font-size: 12px; color: var(--heading); }
+        .row-symbol { font-size: 10px; color: var(--muted); margin-top: 2px; letter-spacing: 1px; }
+        .row-price { font-size: 13px; font-weight: 700; color: var(--accent); }
+
+        .empty-state {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 80px 20px;
+            animation: fadeUp 0.5s ease both;
+        }
+
+        .empty-icon { font-size: 48px; opacity: 0.2; margin-bottom: 16px; }
+        .empty-text { font-size: 11px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 24px; }
+
+        .empty-link {
+            color: var(--accent2);
+            text-decoration: none;
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border: 1px solid rgba(0,212,255,0.2);
+            padding: 10px 20px;
+            border-radius: 2px;
+            transition: all 0.2s;
+            display: inline-block;
+        }
+
+        .empty-link:hover {
+            background: rgba(0,212,255,0.07);
+            border-color: var(--accent2);
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 680px) {
+            .stats-grid { grid-template-columns: 1fr; }
+            .main-grid  { grid-template-columns: 1fr; }
+            header { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <span class="logo-title">CRIPTOTRACK</span>
+    <nav>
+        <a href="{% url 'cripto-list' %}">← Mercado</a>
+        <a href="{% url 'ver-favoritos' %}">⭐ Favoritos</a>
+    </nav>
+</header>
+
+<div class="hero">
+    <p class="hero-label">Resumo da sua carteira</p>
+    <h1>ANÁLISE <span>DE PREÇOS</span></h1>
+</div>
+
+{% if favoritos %}
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <p class="stat-label">Mais caro</p>
+        <p class="stat-value">${{ mais_caro.preco }}</p>
+        <p class="stat-sub">{{ mais_caro.nome }} · {{ mais_caro.simbolo|upper }}</p>
+    </div>
+    <div class="stat-card">
+        <p class="stat-label">Mais barato</p>
+        <p class="stat-value">${{ mais_barato.preco }}</p>
+        <p class="stat-sub">{{ mais_barato.nome }} · {{ mais_barato.simbolo|upper }}</p>
+    </div>
+    <div class="stat-card">
+        <p class="stat-label">Total em carteira</p>
+        <p class="stat-value">${{ total }}</p>
+        <p class="stat-sub">{{ favoritos|length }} ativo{% if favoritos|length != 1 %}s{% endif %} favoritado{% if favoritos|length != 1 %}s{% endif %}</p>
+    </div>
+</div>
+
+<div class="main-grid">
+
+    <div class="chart-box">
+        <p class="box-title">Comparativo de preços</p>
+        <div class="chart-wrap">
+            <canvas id="chart"></canvas>
+        </div>
+    </div>
+
+    <div class="table-box">
+        <p class="box-title">Todos os ativos</p>
+        {% for fav in favoritos %}
+        <div class="table-row">
+            <div>
+                <div class="row-name">{{ fav.nome }}</div>
+                <div class="row-symbol">{{ fav.simbolo|upper }}</div>
+            </div>
+            <div class="row-price">${{ fav.preco }}</div>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+<script>
+    const labels = [{% for fav in favoritos %}"{{ fav.simbolo|upper }}"{% if not forloop.last %},{% endif %}{% endfor %}];
+    const prices = [{% for fav in favoritos %}{{ fav.preco }}{% if not forloop.last %},{% endif %}{% endfor %}];
+
+    new Chart(document.getElementById('chart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels,
+            datasets: [{
+                data: prices,
+                backgroundColor: prices.map((_, i) => `hsla(${260 + i * 20}, 75%, 65%, 0.55)`),
+                borderColor: prices.map((_, i) => `hsla(${260 + i * 20}, 80%, 70%, 1)`),
+                borderWidth: 1,
+                borderRadius: 2,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#0b1120',
+                    borderColor: 'rgba(160,100,255,0.3)',
+                    borderWidth: 1,
+                    titleColor: '#ffffff',
+                    bodyColor: '#a064ff',
+                    titleFont: { family: 'Space Mono', size: 11 },
+                    bodyFont: { family: 'Space Mono', size: 12 },
+                    callbacks: { label: ctx => ` $${ctx.parsed.y.toLocaleString()}` }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: { color: '#3a4a5c', font: { family: 'Space Mono', size: 10 } },
+                    grid: { color: 'rgba(160,100,255,0.05)' },
+                    border: { color: 'rgba(160,100,255,0.1)' }
+                },
+                y: {
+                    ticks: {
+                        color: '#3a4a5c',
+                        font: { family: 'Space Mono', size: 10 },
+                        callback: v => '$' + v.toLocaleString()
+                    },
+                    grid: { color: 'rgba(160,100,255,0.05)' },
+                    border: { color: 'rgba(160,100,255,0.1)' }
+                }
+            }
+        }
+    });
+</script>
+
+{% else %}
+
+<div class="empty-state">
+    <div class="empty-icon">📊</div>
+    <p class="empty-text">Nenhum favorito para analisar</p>
+    <a href="{% url 'cripto-list' %}" class="empty-link">Adicionar favoritos →</a>
+</div>
+
+{% endif %}
+
+</body>
+</html>

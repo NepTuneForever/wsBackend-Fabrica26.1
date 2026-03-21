@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>CryptoTrack — Atualizar Preço</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #05080f;
+            --surface: #0b1120;
+            --border: rgba(0, 255, 136, 0.12);
+            --accent: #00ff88;
+            --muted: #3a4a5c;
+            --text: #c8dff0;
+            --heading: #ffffff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Space Mono', monospace;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0,255,136,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,255,136,0.025) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: -200px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 400px;
+            background: radial-gradient(ellipse, rgba(0,255,136,0.07) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        header {
+            position: relative;
+            z-index: 10;
+            padding: 28px 40px 20px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 36px;
+            letter-spacing: 4px;
+            color: var(--heading);
+        }
+
+        nav { display: flex; gap: 10px; }
+
+        nav a {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border: 1px solid rgba(0,255,136,0.12);
+            padding: 8px 16px;
+            border-radius: 2px;
+            transition: all 0.2s;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+            border-color: rgba(0,255,136,0.4);
+            background: rgba(0,255,136,0.05);
+        }
+
+        .hero {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 50px 20px 40px;
+        }
+
+        .hero-label {
+            font-size: 11px;
+            letter-spacing: 4px;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .hero h1 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(40px, 7vw, 80px);
+            letter-spacing: 8px;
+            color: var(--heading);
+            line-height: 1;
+        }
+
+        .hero h1 span { color: var(--accent); }
+
+        .coin-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 16px;
+            border: 1px solid var(--border);
+            padding: 8px 20px;
+            border-radius: 2px;
+            background: rgba(0,255,136,0.04);
+        }
+
+        .coin-initial {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(0,255,136,0.08);
+            border: 1px solid rgba(0,255,136,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .coin-badge-name { font-size: 13px; color: var(--heading); }
+        .coin-badge-symbol { font-size: 11px; color: var(--muted); letter-spacing: 1px; }
+
+        .form-wrap {
+            position: relative;
+            z-index: 10;
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 0 20px 60px;
+            animation: fadeUp 0.4s ease both;
+        }
+
+        .form-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 32px;
+        }
+
+        .field-label {
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .field-wrap {
+            position: relative;
+            margin-bottom: 24px;
+        }
+
+        .field-prefix {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--accent);
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .field-wrap input {
+            width: 100%;
+            background: rgba(0,255,136,0.04);
+            border: 1px solid rgba(0,255,136,0.2);
+            border-radius: 2px;
+            padding: 14px 14px 14px 30px;
+            color: var(--heading);
+            font-family: 'Space Mono', monospace;
+            font-size: 16px;
+            font-weight: 700;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .field-wrap input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 16px rgba(0,255,136,0.15);
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: rgba(0,255,136,0.1);
+            border: 1px solid rgba(0,255,136,0.4);
+            color: var(--accent);
+            font-family: 'Space Mono', monospace;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            padding: 14px;
+            border-radius: 2px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-submit:hover {
+            background: rgba(0,255,136,0.18);
+            border-color: var(--accent);
+            box-shadow: 0 0 20px rgba(0,255,136,0.2);
+        }
+
+        .btn-submit:active { transform: scale(0.98); }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <span class="logo-title">CRIPTOTRACK</span>
+    <nav>
+        <a href="{% url 'cripto-list' %}">← Mercado</a>
+        <a href="{% url 'ver-favoritos' %}">⭐ Favoritos</a>
+    </nav>
+</header>
+
+<div class="hero">
+    <p class="hero-label">Editar favorito</p>
+    <h1>ATUALIZAR <span>PREÇO</span></h1>
+    <div class="coin-badge">
+        <div class="coin-initial">{{ object.simbolo|upper|slice:":2" }}</div>
+        <span class="coin-badge-name">{{ object.nome }}</span>
+        <span class="coin-badge-symbol">{{ object.simbolo|upper }}</span>
+    </div>
+</div>
+
+<div class="form-wrap">
+    <div class="form-box">
+        <form method="POST">
+            {% csrf_token %}
+            <label class="field-label">Novo preço (USD)</label>
+            <div class="field-wrap">
+                <span class="field-prefix">$</span>
+                {{ form.preco }}
+            </div>
+            <button type="submit" class="btn-submit">Salvar preço</button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>
