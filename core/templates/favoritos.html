@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Favoritos</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #0d1117;
+            color: #e6edf3;
+        }
+
+        h1 {
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+            background: #161b22;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            transition: 0.2s;
+        }
+
+        .card:hover {
+            transform: scale(1.02);
+            border-color: #58a6ff;
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .name {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .symbol {
+            color: #8b949e;
+            margin-left: 5px;
+        }
+
+        .right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .price {
+            font-size: 16px;
+            color: #58a6ff;
+            font-weight: bold;
+        }
+
+        .btn-remove {
+            background: none;
+            border: 1px solid #ff7b72;
+            color: #ff7b72;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            font-size: 18px;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            transition: 0.2s;
+        }
+
+        .btn-remove:hover {
+            background: #ff7b72;
+            color: #0d1117;
+        }
+
+        .empty {
+            text-align: center;
+            margin-top: 50px;
+            color: #8b949e;
+            font-size: 16px;
+        }
+
+        .back {
+            display: block;
+            text-align: center;
+            margin-top: 30px;
+            color: #58a6ff;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .back:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<h1>⭐ Meus Favoritos</h1>
+
+<div class="container">
+
+    {% for fav in cripto_favoritos %}
+    <div class="card">
+        <div class="top">
+            <div>
+                <span class="name">{{ fav.nome }}</span>
+                <span class="symbol">({{ fav.simbolo|upper }})</span>
+            </div>
+            <div class="right">
+                <span class="price">${{ fav.preco }}</span>
+                <form method="POST">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-remove" title="Remover">−</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% empty %}
+    <p class="empty">Você ainda não tem favoritos 😕</p>
+{% endfor %}
+
+<a class="back" href="{% url 'cripto-list' %}">← Voltar para criptomoedas</a>
+
+</div>
+
+</body>
+</html>

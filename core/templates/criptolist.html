@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Criptomoedas</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #0d1117;
+            color: #e6edf3;
+        }
+
+        h1 {
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+            background: #161b22;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .nav {
+            text-align: center;
+            padding: 12px;
+            background: #161b22;
+        }
+
+        .nav a {
+            color: #58a6ff;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .nav a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            transition: 0.2s;
+        }
+
+        .card:hover {
+            transform: scale(1.02);
+            border-color: #58a6ff;
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .name {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .symbol {
+            color: #8b949e;
+            margin-left: 5px;
+        }
+
+        .price {
+            font-size: 16px;
+            color: #58a6ff;
+            font-weight: bold;
+        }
+
+        .right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-fav {
+            background: none;
+            border: 1px solid #58a6ff;
+            color: #58a6ff;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            font-size: 18px;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            transition: 0.2s;
+        }
+
+        .btn-fav:hover {
+            background: #58a6ff;
+            color: #0d1117;
+        }
+
+        .empty {
+            text-align: center;
+            margin-top: 50px;
+            color: #ff7b72;
+        }
+    </style>
+</head>
+<body>
+
+<h1>🚀 Top Criptomoedas</h1>
+
+<div class="nav">
+    <a href="{% url 'ver-favoritos' %}">⭐ Ver Favoritos</a>
+</div>
+
+<div class="container">
+
+{% if erro %}
+    <p class="empty">⚠️ {{ erro }}</p>
+{% endif %}
+
+{% for cripto in criptos %}
+    <div class="card">
+        <div class="top">
+            <div>
+                <span class="name">{{ cripto.name }}</span>
+                <span class="symbol">({{ cripto.symbol|upper }})</span>
+            </div>
+            <div class="right">
+                <span class="price">${{ cripto.current_price }}</span>
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="cripto_id" value="{{ cripto.id }}">
+                    <input type="hidden" name="cripto_name" value="{{ cripto.name }}">
+                    <input type="hidden" name="cripto_symbol" value="{{ cripto.symbol }}">
+                    <input type="hidden" name="cripto_price" value="{{ cripto.current_price }}">
+                    <button type="submit" class="btn-fav" title="Adicionar aos favoritos">+</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% empty %}
+    {% if not erro %}
+        <p class="empty">Erro ao carregar criptomoedas 😢</p>
+    {% endif %}
+{% endfor %}
+
+</div>
+
+</body>
+</html>
