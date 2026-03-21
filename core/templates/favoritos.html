@@ -1,142 +1,377 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-    <title>Favoritos</title>
-
+    <meta charset="UTF-8">
+    <title>CryptoTrack — Favoritos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg: #05080f;
+            --surface: #0b1120;
+            --border: rgba(0, 212, 255, 0.12);
+            --accent: #00d4ff;
+            --green: #00ff88;
+            --gold: #ffd166;
+            --red: #ff4466;
+            --muted: #3a4a5c;
+            --text: #c8dff0;
+            --heading: #ffffff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #0d1117;
-            color: #e6edf3;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Space Mono', monospace;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        h1 {
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,209,102,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,209,102,0.025) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: -200px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 400px;
+            background: radial-gradient(ellipse, rgba(255,209,102,0.07) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* HEADER */
+        header {
+            position: relative;
+            z-index: 10;
+            padding: 28px 40px 20px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+        }
+
+        .logo-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 36px;
+            letter-spacing: 4px;
+            color: var(--heading);
+        }
+
+        nav a {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border: 1px solid var(--border);
+            padding: 8px 18px;
+            border-radius: 2px;
+            transition: all 0.2s;
+        }
+
+        nav a:hover {
+            color: var(--accent);
+            border-color: rgba(0,212,255,0.4);
+            background: rgba(0,212,255,0.05);
+        }
+
+        /* HERO */
+        .hero {
+            position: relative;
+            z-index: 10;
             text-align: center;
-            padding: 20px;
-            margin: 0;
-            background: #161b22;
-            border-bottom: 1px solid #30363d;
+            padding: 50px 20px 30px;
         }
 
+        .hero-label {
+            font-size: 11px;
+            letter-spacing: 4px;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .hero h1 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(48px, 8vw, 96px);
+            letter-spacing: 8px;
+            color: var(--heading);
+            line-height: 1;
+        }
+
+        .hero h1 span {
+            color: var(--gold);
+        }
+
+        /* COUNTER BADGE */
+        .counter {
+            display: inline-block;
+            margin-top: 14px;
+            font-size: 11px;
+            letter-spacing: 2px;
+            color: var(--gold);
+            border: 1px solid rgba(255,209,102,0.25);
+            padding: 4px 14px;
+            border-radius: 2px;
+        }
+
+        /* TABLE HEADER */
+        .table-header {
+            position: relative;
+            z-index: 10;
+            max-width: 860px;
+            margin: 30px auto 0;
+            padding: 0 20px 10px;
+            display: grid;
+            grid-template-columns: 40px 1fr 140px 80px;
+            gap: 12px;
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--muted);
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* CONTAINER */
         .container {
-            max-width: 900px;
-            margin: 30px auto;
-            padding: 0 20px;
+            position: relative;
+            z-index: 10;
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 0 20px 60px;
         }
 
         .card {
-            background: #161b22;
-            border: 1px solid #30363d;
-            border-radius: 10px;
-            padding: 15px 20px;
-            margin-bottom: 15px;
-            transition: 0.2s;
+            display: grid;
+            grid-template-columns: 40px 1fr 140px 80px;
+            gap: 12px;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(255,209,102,0.06);
+            transition: all 0.2s;
+            animation: fadeUp 0.4s ease both;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
 
         .card:hover {
-            transform: scale(1.02);
-            border-color: #58a6ff;
+            background: rgba(255,209,102,0.03);
+            padding-left: 8px;
+            padding-right: 8px;
+            margin: 0 -8px;
+            border-radius: 4px;
+            border-color: transparent;
         }
 
-        .top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .star {
+            text-align: center;
+            font-size: 14px;
+            opacity: 0.5;
+            transition: opacity 0.2s;
         }
 
-        .name {
-            font-size: 18px;
-            font-weight: bold;
-        }
+        .card:hover .star { opacity: 1; }
 
-        .symbol {
-            color: #8b949e;
-            margin-left: 5px;
-        }
-
-        .right {
+        .coin-info {
             display: flex;
             align-items: center;
             gap: 12px;
         }
 
+        .coin-initial {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255,209,102,0.07);
+            border: 1px solid rgba(255,209,102,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: var(--gold);
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .coin-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--heading);
+        }
+
+        .coin-symbol {
+            font-size: 11px;
+            color: var(--muted);
+            letter-spacing: 1px;
+            margin-top: 2px;
+        }
+
         .price {
-            font-size: 16px;
-            color: #58a6ff;
-            font-weight: bold;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--gold);
+            text-align: right;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: flex-end;
         }
 
         .btn-remove {
             background: none;
-            border: 1px solid #ff7b72;
-            color: #ff7b72;
-            border-radius: 50%;
-            width: 28px;
-            height: 28px;
+            border: 1px solid rgba(255,68,102,0.3);
+            color: var(--red);
+            width: 30px;
+            height: 30px;
+            border-radius: 2px;
             font-size: 18px;
-            line-height: 1;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 0;
-            transition: 0.2s;
+            transition: all 0.2s;
+            font-family: 'Space Mono', monospace;
         }
 
         .btn-remove:hover {
-            background: #ff7b72;
-            color: #0d1117;
+            background: rgba(255,68,102,0.1);
+            border-color: var(--red);
+            box-shadow: 0 0 12px rgba(255,68,102,0.25);
+            transform: scale(1.1);
         }
 
-        .empty {
+        .btn-remove:active { transform: scale(0.95); }
+
+        /* EMPTY */
+        .empty-state {
             text-align: center;
-            margin-top: 50px;
-            color: #8b949e;
-            font-size: 16px;
+            padding: 80px 20px;
+            animation: fadeUp 0.5s ease both;
         }
 
-        .back {
-            display: block;
-            text-align: center;
-            margin-top: 30px;
-            color: #58a6ff;
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        .empty-text {
+            font-size: 12px;
+            letter-spacing: 2px;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin-bottom: 24px;
+        }
+
+        .empty-link {
+            color: var(--accent);
             text-decoration: none;
-            font-size: 14px;
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border: 1px solid var(--border);
+            padding: 10px 20px;
+            border-radius: 2px;
+            transition: all 0.2s;
+            display: inline-block;
         }
 
-        .back:hover {
-            text-decoration: underline;
+        .empty-link:hover {
+            background: rgba(0,212,255,0.08);
+            border-color: var(--accent);
         }
+
+        /* Stagger */
+        .card:nth-child(1)  { animation-delay: 0.05s; }
+        .card:nth-child(2)  { animation-delay: 0.10s; }
+        .card:nth-child(3)  { animation-delay: 0.15s; }
+        .card:nth-child(4)  { animation-delay: 0.20s; }
+        .card:nth-child(5)  { animation-delay: 0.25s; }
+        .card:nth-child(6)  { animation-delay: 0.30s; }
+        .card:nth-child(7)  { animation-delay: 0.35s; }
+        .card:nth-child(8)  { animation-delay: 0.40s; }
     </style>
 </head>
 <body>
 
-<h1>⭐ Meus Favoritos</h1>
+<header>
+    <div class="logo">
+        <span class="logo-title">CRIPTOTRACK</span>
+    </div>
+    <nav>
+        <a href="{% url 'cripto-list' %}">← Mercado</a>
+    </nav>
+</header>
+
+<div class="hero">
+    <p class="hero-label">Sua lista pessoal</p>
+    <h1>MEUS <span>FAVORITOS</span></h1>
+    <span class="counter">{{ cripto_favoritos|length }} ATIVO{% if cripto_favoritos|length != 1 %}S{% endif %}</span>
+</div>
+
+<div class="table-header">
+    <span></span>
+    <span>Ativo</span>
+    <span style="text-align:right">Preço (USD)</span>
+    <span></span>
+</div>
 
 <div class="container">
 
     {% for fav in cripto_favoritos %}
     <div class="card">
-        <div class="top">
+        <span class="star">⭐</span>
+
+        <div class="coin-info">
+            <div class="coin-initial">{{ fav.simbolo|upper|slice:":2" }}</div>
             <div>
-                <span class="name">{{ fav.nome }}</span>
-                <span class="symbol">({{ fav.simbolo|upper }})</span>
-            </div>
-            <div class="right">
-                <span class="price">${{ fav.preco }}</span>
-                <form method="POST">
-                    {% csrf_token %}
-                    <button type="submit" class="btn-remove" title="Remover">−</button>
-                </form>
+                <div class="coin-name">{{ fav.nome }}</div>
+                <div class="coin-symbol">{{ fav.simbolo|upper }}</div>
             </div>
         </div>
-    </div>
-{% empty %}
-    <p class="empty">Você ainda não tem favoritos 😕</p>
-{% endfor %}
 
-<a class="back" href="{% url 'cripto-list' %}">← Voltar para criptomoedas</a>
+        <div class="price">${{ fav.preco }}</div>
+
+        <div class="actions">
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="favorito_id" value="{{ fav.id }}">
+                <button type="submit" class="btn-remove" title="Remover">−</button>
+            </form>
+        </div>
+    </div>
+
+    {% empty %}
+    <div class="empty-state">
+        <div class="empty-icon">☆</div>
+        <p class="empty-text">Nenhum favorito ainda</p>
+        <a href="{% url 'cripto-list' %}" class="empty-link">Explorar mercado →</a>
+    </div>
+    {% endfor %}
 
 </div>
 
