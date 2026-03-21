@@ -1,156 +1,380 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-    <title>Criptomoedas</title>
-
+    <meta charset="UTF-8">
+    <title>CryptoTrack — Mercado</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg: #05080f;
+            --surface: #0b1120;
+            --border: rgba(0, 212, 255, 0.12);
+            --accent: #00d4ff;
+            --green: #00ff88;
+            --red: #ff4466;
+            --muted: #3a4a5c;
+            --text: #c8dff0;
+            --heading: #ffffff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
         body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #0d1117;
-            color: #e6edf3;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Space Mono', monospace;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        h1 {
-            text-align: center;
-            padding: 20px;
-            margin: 0;
-            background: #161b22;
-            border-bottom: 1px solid #30363d;
+        /* Animated grid background */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
         }
 
-        .nav {
-            text-align: center;
-            padding: 12px;
-            background: #161b22;
+        /* Glow blob */
+        body::after {
+            content: '';
+            position: fixed;
+            top: -200px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 400px;
+            background: radial-gradient(ellipse, rgba(0,212,255,0.08) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
         }
 
-        .nav a {
-            color: #58a6ff;
+        /* HEADER */
+        header {
+            position: relative;
+            z-index: 10;
+            padding: 28px 40px 0;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+        }
+
+        .logo-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 36px;
+            letter-spacing: 4px;
+            color: var(--heading);
+        }
+
+        .logo-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--green);
+            border-radius: 50%;
+            margin-bottom: 6px;
+            box-shadow: 0 0 12px var(--green);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+
+        .live-badge {
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--green);
+            border: 1px solid rgba(0,255,136,0.3);
+            padding: 3px 8px;
+            border-radius: 2px;
+            margin-bottom: 4px;
+        }
+
+        nav a {
+            color: var(--accent);
             text-decoration: none;
-            font-size: 14px;
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border: 1px solid var(--border);
+            padding: 8px 18px;
+            border-radius: 2px;
+            transition: all 0.2s;
         }
 
-        .nav a:hover {
-            text-decoration: underline;
+        nav a:hover {
+            background: rgba(0,212,255,0.08);
+            border-color: var(--accent);
+            box-shadow: 0 0 16px rgba(0,212,255,0.2);
         }
 
-        .container {
-            max-width: 900px;
-            margin: 30px auto;
+        /* HERO */
+        .hero {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            padding: 50px 20px 30px;
+        }
+
+        .hero-label {
+            font-size: 11px;
+            letter-spacing: 4px;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .hero h1 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(48px, 8vw, 96px);
+            letter-spacing: 8px;
+            color: var(--heading);
+            line-height: 1;
+        }
+
+        .hero h1 span {
+            color: var(--accent);
+        }
+
+        /* TABLE HEADER */
+        .table-header {
+            position: relative;
+            z-index: 10;
+            max-width: 860px;
+            margin: 30px auto 0;
             padding: 0 20px;
+            display: grid;
+            grid-template-columns: 40px 1fr 140px 80px;
+            gap: 12px;
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--muted);
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
+        }
+
+        /* CARDS */
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 0 20px 60px;
         }
 
         .card {
-            background: #161b22;
-            border: 1px solid #30363d;
-            border-radius: 10px;
-            padding: 15px 20px;
-            margin-bottom: 15px;
-            transition: 0.2s;
+            display: grid;
+            grid-template-columns: 40px 1fr 140px 80px;
+            gap: 12px;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(0,212,255,0.06);
+            transition: all 0.2s;
+            cursor: default;
+            animation: fadeUp 0.4s ease both;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
         }
 
         .card:hover {
-            transform: scale(1.02);
-            border-color: #58a6ff;
+            background: rgba(0,212,255,0.03);
+            padding-left: 8px;
+            padding-right: 8px;
+            margin: 0 -8px;
+            border-radius: 4px;
+            border-color: transparent;
         }
 
-        .top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .card:hover .rank { color: var(--accent); }
+
+        .rank {
+            font-size: 11px;
+            color: var(--muted);
+            text-align: center;
+            transition: color 0.2s;
         }
 
-        .name {
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        .symbol {
-            color: #8b949e;
-            margin-left: 5px;
-        }
-
-        .price {
-            font-size: 16px;
-            color: #58a6ff;
-            font-weight: bold;
-        }
-
-        .right {
+        .coin-info {
             display: flex;
             align-items: center;
             gap: 12px;
         }
 
+        .coin-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: var(--accent);
+            letter-spacing: 0;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .coin-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .coin-name {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--heading);
+        }
+
+        .coin-symbol {
+            font-size: 11px;
+            color: var(--muted);
+            letter-spacing: 1px;
+            margin-top: 2px;
+        }
+
+        .price {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--green);
+            text-align: right;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: flex-end;
+        }
+
         .btn-fav {
             background: none;
-            border: 1px solid #58a6ff;
-            color: #58a6ff;
-            border-radius: 50%;
-            width: 28px;
-            height: 28px;
-            font-size: 18px;
-            line-height: 1;
+            border: 1px solid rgba(0,212,255,0.3);
+            color: var(--accent);
+            width: 30px;
+            height: 30px;
+            border-radius: 2px;
+            font-size: 16px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 0;
-            transition: 0.2s;
+            transition: all 0.2s;
+            font-family: 'Space Mono', monospace;
         }
 
         .btn-fav:hover {
-            background: #58a6ff;
-            color: #0d1117;
+            background: rgba(0,212,255,0.12);
+            border-color: var(--accent);
+            box-shadow: 0 0 12px rgba(0,212,255,0.25);
+            transform: scale(1.1);
         }
 
+        .btn-fav:active { transform: scale(0.95); }
+
+        /* ERROR / EMPTY */
         .empty {
             text-align: center;
-            margin-top: 50px;
-            color: #ff7b72;
+            padding: 60px 20px;
+            color: var(--red);
+            font-size: 13px;
+            letter-spacing: 1px;
         }
+
+        /* Stagger animation */
+        .card:nth-child(1)  { animation-delay: 0.05s; }
+        .card:nth-child(2)  { animation-delay: 0.10s; }
+        .card:nth-child(3)  { animation-delay: 0.15s; }
+        .card:nth-child(4)  { animation-delay: 0.20s; }
+        .card:nth-child(5)  { animation-delay: 0.25s; }
+        .card:nth-child(6)  { animation-delay: 0.30s; }
+        .card:nth-child(7)  { animation-delay: 0.35s; }
+        .card:nth-child(8)  { animation-delay: 0.40s; }
+        .card:nth-child(9)  { animation-delay: 0.45s; }
+        .card:nth-child(10) { animation-delay: 0.50s; }
     </style>
 </head>
 <body>
 
-<h1>🚀 Top Criptomoedas</h1>
+<header>
+    <div class="logo">
+        <span class="logo-title">CRIPTOTRACK</span>
+        <div class="logo-dot"></div>
+        <span class="live-badge">LIVE</span>
+    </div>
+    <nav>
+        <a href="{% url 'ver-favoritos' %}">⭐ Favoritos</a>
+    </nav>
+</header>
 
-<div class="nav">
-    <a href="{% url 'ver-favoritos' %}">⭐ Ver Favoritos</a>
+<div class="hero">
+    <p class="hero-label">Top 20 por capitalização de mercado</p>
+    <h1>MERCADO <span>CRIPTO</span></h1>
+</div>
+
+<div class="table-header">
+    <span>#</span>
+    <span>Ativo</span>
+    <span style="text-align:right">Preço (USD)</span>
+    <span></span>
 </div>
 
 <div class="container">
 
-{% if erro %}
-    <p class="empty">⚠️ {{ erro }}</p>
-{% endif %}
+    {% if erro %}
+        <p class="empty">⚠ {{ erro }}</p>
+    {% endif %}
 
-{% for cripto in criptos %}
+    {% for cripto in criptos %}
     <div class="card">
-        <div class="top">
-            <div>
-                <span class="name">{{ cripto.name }}</span>
-                <span class="symbol">({{ cripto.symbol|upper }})</span>
+        <span class="rank">{{ forloop.counter }}</span>
+
+        <div class="coin-info">
+            <div class="coin-icon">
+                <img src="{{ cripto.image }}" alt="{{ cripto.symbol }}" onerror="this.style.display='none'">
             </div>
-            <div class="right">
-                <span class="price">${{ cripto.current_price }}</span>
-                <form method="POST">
-                    {% csrf_token %}
-                    <input type="hidden" name="cripto_id" value="{{ cripto.id }}">
-                    <input type="hidden" name="cripto_name" value="{{ cripto.name }}">
-                    <input type="hidden" name="cripto_symbol" value="{{ cripto.symbol }}">
-                    <input type="hidden" name="cripto_price" value="{{ cripto.current_price }}">
-                    <button type="submit" class="btn-fav" title="Adicionar aos favoritos">+</button>
-                </form>
+            <div>
+                <div class="coin-name">{{ cripto.name }}</div>
+                <div class="coin-symbol">{{ cripto.symbol|upper }}</div>
             </div>
         </div>
+
+        <div class="price">${{ cripto.current_price }}</div>
+
+        <div class="actions">
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="cripto_id" value="{{ cripto.id }}">
+                <input type="hidden" name="cripto_name" value="{{ cripto.name }}">
+                <input type="hidden" name="cripto_symbol" value="{{ cripto.symbol }}">
+                <input type="hidden" name="cripto_price" value="{{ cripto.current_price }}">
+                <button type="submit" class="btn-fav" title="Adicionar aos favoritos">+</button>
+            </form>
+        </div>
     </div>
-{% empty %}
-    {% if not erro %}
-        <p class="empty">Erro ao carregar criptomoedas 😢</p>
-    {% endif %}
-{% endfor %}
+    {% empty %}
+        {% if not erro %}
+            <p class="empty">Nenhuma cripto encontrada.</p>
+        {% endif %}
+    {% endfor %}
 
 </div>
 
