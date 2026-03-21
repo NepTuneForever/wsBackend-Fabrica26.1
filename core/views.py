@@ -14,6 +14,9 @@ class CryptoListView(View):
             elif response.status_code != 200:
                 return render(request, "criptolist.html", {"criptos": [], "erro": f"Erro na API encontrado: {response.status_code}"})
 
+            for c in response.json():
+                Cripto.objects.update_or_create(simbolo=c['symbol'], defaults={ 'nome': c['name'], 'preco': c['current_price'] })
+
             favoritos = list(Favorito.objects.values_list('simbolo', flat=True)) # Tava vindo como tupla dentro de listas, converti pra apenas lista (usando flat=True)
             criptos = []
             for c in response.json():
