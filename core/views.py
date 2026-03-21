@@ -45,3 +45,4 @@ class VerFavoritos(ListView):
     template_name = 'favoritos.html'
     context_object_name = 'cripto_favoritos'
     success_url = reverse_lazy('ver-favoritos')
+
