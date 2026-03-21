@@ -52,7 +52,7 @@ class AnalisarPrecos(ListView):
 
         context['mais_caro']   = Favorito.objects.order_by('-preco').first()
         context['mais_barato'] = Favorito.objects.order_by('preco').first()
-        context['total']       = sum(f.preco for f in context['favoritos'])
+        context['total'] = sum(f.preco for f in context['favoritos'])
 
         return context
     
