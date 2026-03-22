@@ -114,31 +114,37 @@ docker compose exec web python manage.py createsuperuser
 
 ## 📡 Endpoints da API
 
-### Criptomoedas
+Todos os endpoints partem de `/api/`.
 
-| Método | Endpoint | Descrição |
-|---|---|---|
-| `GET` | `/api/criptos/` | Lista todas as criptomoedas |
-| `POST` | `/api/criptos/` | Cadastra uma nova criptomoeda |
-| `GET` | `/api/criptos/{id}/` | Retorna uma criptomoeda pelo ID |
-| `PUT` | `/api/criptos/{id}/` | Atualiza uma criptomoeda |
-| `DELETE` | `/api/criptos/{id}/` | Remove uma criptomoeda |
+| Método | Endpoint | Descrição | Auth |
+|---|---|---|---|
+| `POST` | `/api/login/` | Gera token de autenticação | ❌ |
+| `GET` | `/api/` | Lista todas as criptomoedas | ✅ |
+| `GET` | `/api/favoritos/` | Lista as criptomoedas favoritas | ✅ |
+| `GET` | `/api/analises/` | Análise de preços via API externa | ✅ |
+| `PUT` | `/api/atualizar/{id}/` | Atualiza o preço de uma criptomoeda | ✅ |
 
-### Favoritos
+> ✅ Endpoints marcados exigem autenticação via token. Envie o header `Authorization: Token <seu-token>`.
 
-| Método | Endpoint | Descrição |
-|---|---|---|
-| `GET` | `/api/favoritos/` | Lista todos os favoritos |
-| `POST` | `/api/favoritos/` | Adiciona uma criptomoeda aos favoritos |
-| `GET` | `/api/favoritos/{id}/` | Retorna um favorito pelo ID |
-| `PUT` | `/api/favoritos/{id}/` | Atualiza um favorito |
-| `DELETE` | `/api/favoritos/{id}/` | Remove um favorito |
+### Exemplo de autenticação
 
-### API Externa
+```bash
+# 1. Obter o token
+POST /api/login/
+{
+  "username": "seu-usuario",
+  "password": "sua-senha"
+}
 
-| Método | Endpoint | Descrição |
-|---|---|---|
-| `GET` | `/api/cotacao/` | Consulta cotações em tempo real via API externa |
+# Resposta
+{
+  "token": "9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b"
+}
+
+# 2. Usar o token nas requisições
+GET /api/
+Authorization: Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b
+```
 
 ---
 
@@ -156,7 +162,7 @@ Representa uma criptomoeda cadastrada no sistema.
 
 ### Favorito
 
-Representa uma criptomoeda marcada como favorita pelo usuário.
+Representa uma criptomoeda marcada como favorita, com vínculo à entidade `Cripto`.
 
 | Campo | Tipo | Descrição |
 |---|---|---|
@@ -183,6 +189,7 @@ wsBackend-Fabrica26.1/
 ├── cripto/
 │   ├── settings.py
 │   ├── urls.py
+│   ├── asgi.py
 │   └── wsgi.py
 ├── .env               # variáveis de ambiente (não versionar)
 ├── .gitignore
@@ -220,6 +227,6 @@ docker compose exec web python manage.py createsuperuser
 
 ---
 
-## 👥 Autores
+## 👥 Autor
 
-Desenvolvido para o processo seletivo da **Fábrica de Software — Turma 26.1**.
+Desenvolvido por [NeptuneForever](https://github.com/NeptuneForever) para o processo seletivo da **Fábrica de Software — Turma 26.1**.
