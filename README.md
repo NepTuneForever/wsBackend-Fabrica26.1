@@ -44,7 +44,7 @@ Antes de começar, você precisa ter instalado na sua máquina:
 ### 1. Clone o repositório
 
 ```bash
-git clone https://github.com/seu-usuario/wsBackend-Fabrica26.1.git
+git clone https://github.com/NeptuneForever/wsBackend-Fabrica26.1.git
 cd wsBackend-Fabrica26.1
 ```
 
